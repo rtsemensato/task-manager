@@ -1,0 +1,127 @@
+.tasks-page {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 24px 64px;
+}
+
+.tasks-header {
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.8rem;
+  color: var(--accent);
+  margin: 0 0 8px;
+}
+
+.tasks-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.new-task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.new-task-form input {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 9px 11px;
+  font-size: 0.92rem;
+}
+
+.new-task-form .btn-primary {
+  align-self: flex-start;
+  padding: 8px 18px;
+}
+
+.hint {
+  color: var(--mute);
+  font-size: 0.9rem;
+}
+
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+
+.task-check {
+  padding-top: 2px;
+}
+
+.task-check input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.task-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.task-item.is-done .task-title {
+  color: var(--mute);
+  text-decoration: line-through;
+}
+
+.task-desc {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: var(--mute);
+  word-break: break-word;
+}
+
+.task-delete {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--mute);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.task-delete:hover {
+  background: var(--surface-2);
+  color: var(--danger);
+}

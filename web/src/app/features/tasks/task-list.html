@@ -1,0 +1,41 @@
+<div class="tasks-page">
+  <header class="tasks-header">
+    <p class="eyebrow">// minhas tarefas</p>
+    <h1>Tarefas</h1>
+  </header>
+
+  <form class="new-task-form" (ngSubmit)="createTask()">
+    <input type="text" name="title" placeholder="O que precisa ser feito?" [(ngModel)]="newTitle" />
+    <input type="text" name="description" placeholder="Descrição (opcional)" [(ngModel)]="newDescription" />
+    <button type="submit" class="btn-primary" [disabled]="!newTitle.trim() || isCreating()">
+      {{ isCreating() ? 'Adicionando…' : 'Adicionar' }}
+    </button>
+  </form>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  @if (isLoading()) {
+    <p class="hint">Carregando tarefas…</p>
+  } @else if (tasks().length === 0) {
+    <p class="hint">Nenhuma tarefa ainda. Adicione a primeira acima.</p>
+  } @else {
+    <ul class="task-list">
+      @for (task of tasks(); track task.id) {
+        <li class="task-item" [class.is-done]="task.is_done">
+          <label class="task-check">
+            <input type="checkbox" [checked]="task.is_done" (change)="toggleDone(task)" />
+          </label>
+          <div class="task-body">
+            <p class="task-title">{{ task.title }}</p>
+            @if (task.description) {
+              <p class="task-desc">{{ task.description }}</p>
+            }
+          </div>
+          <button type="button" class="task-delete" aria-label="Excluir tarefa" (click)="removeTask(task)">×</button>
+        </li>
+      }
+    </ul>
+  }
+</div>
