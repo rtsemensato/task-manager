@@ -10,19 +10,36 @@ FastAPI no back-end.
 primeiro acesso depois de um tempo sem uso pode levar ~30s pra responder
 porque o servidor "dorme").
 
+## Estrutura do repositório
+
 ```
 task-manager/
-├── api/   → backend FastAPI + SQLAlchemy + JWT
-└── web/   → frontend Angular
+├── api/
+│   ├── app/
+│   │   ├── main.py           # app FastAPI, CORS, lifespan (cria tabelas)
+│   │   ├── config.py         # Settings (pydantic-settings), lidas de env vars
+│   │   ├── database.py       # engine, SessionLocal, Base
+│   │   ├── models.py         # User, Task (SQLAlchemy)
+│   │   ├── schemas.py        # Pydantic: request/response
+│   │   ├── security.py       # hash de senha (bcrypt), JWT (python-jose)
+│   │   ├── deps.py           # get_current_user (decodifica o token)
+│   │   └── routers/          # auth.py, tasks.py
+│   └── tests/                # pytest + FastAPI TestClient
+└── web/
+    └── src/app/
+        ├── core/              # AuthService, TaskService, guards, interceptor
+        └── features/          # login/, register/, tasks/ (componentes standalone)
 ```
 
 ## Stack
 
-- **Backend**: FastAPI, SQLAlchemy, SQLite (dev), autenticação JWT
-  (python-jose) com senha hasheada em bcrypt.
-- **Frontend**: Angular (standalone components, signals, reactive forms),
-  guards e interceptor funcionais pra rota protegida e anexo automático do
-  token nas requisições.
+| Camada | Tecnologia |
+|---|---|
+| Frontend | Angular (standalone components, signals, reactive forms) |
+| Backend | FastAPI, SQLAlchemy |
+| Auth | JWT (python-jose), senha hasheada em bcrypt |
+| Banco | SQLite |
+| Testes | pytest (backend), Vitest (frontend) |
 
 ## Rodando localmente
 
@@ -53,6 +70,13 @@ npm start
 
 Abre em [http://localhost:4200](http://localhost:4200).
 
+## Testes
+
+```bash
+cd api && pytest -v                      # backend: auth, CRUD, isolamento entre usuários
+cd web && npm test -- --watch=false      # frontend
+```
+
 ## Endpoints principais
 
 | Método | Rota            | Descrição                          |
@@ -65,6 +89,39 @@ Abre em [http://localhost:4200](http://localhost:4200).
 | PATCH  | `/tasks/{id}`    | Atualiza título, descrição ou status|
 | DELETE | `/tasks/{id}`    | Remove uma tarefa                   |
 
+Todas as rotas de `/tasks` exigem `Authorization: Bearer <token>` e só
+enxergam tarefas do próprio usuário autenticado.
+
+## Decisões técnicas
+
+### Ownership de tarefas, sempre por query
+
+Toda consulta de tarefa filtra por `owner_id`, inclusive busca por id.
+Tentar acessar a tarefa de outro usuário retorna 404 (não 403), pra não
+revelar que o recurso existe.
+
+### `CORS_ORIGINS` como string separada por vírgula
+
+A primeira versão usava uma lista JSON (`["http://..."]`), decodificada
+automaticamente pelo pydantic-settings. Isso quebrou o primeiro deploy real
+no Render, porque o valor foi digitado no dashboard sem colchetes/aspas
+exatos. Um campo de texto de plataforma de deploy não valida sintaxe, então
+trocamos para uma string simples separada por vírgula, mais tolerante a
+erro de digitação.
+
+### Logout precisa navegar, não só limpar o token
+
+`AuthService.logout()` injeta `Router` e navega pra `/login` depois de
+limpar a sessão. Sem isso, a tela de tarefas continuava visível (só sem o
+botão "Sair") depois do logout, porque o guard de rota só roda em
+navegações, não reage sozinho a mudança de estado de autenticação.
+
+### Sem Alembic
+
+As tabelas são criadas automaticamente no startup
+(`Base.metadata.create_all`). Suficiente pro escopo atual; migrações formais
+entram se o schema crescer.
+
 ## Deploy
 
 - **API**: Render (free tier). Configurar `SECRET_KEY` e `CORS_ORIGINS` como
@@ -75,8 +132,6 @@ Abre em [http://localhost:4200](http://localhost:4200).
   consciente, não um bug.
 - **Frontend**: Vercel ou Netlify. Ajustar `apiBaseUrl` em
   `web/src/environments/environment.ts` pra URL real da API antes do build de
-  produção.
+  produção (não há variável de ambiente em runtime, é uma SPA estática).
 
-Sem Alembic por enquanto: as tabelas são criadas automaticamente no startup
-(`Base.metadata.create_all`). Suficiente pro escopo atual; migrações formais
-entram se o schema crescer.
+Ver [`CLAUDE.md`](CLAUDE.md) para mais detalhes de arquitetura e convenções.
