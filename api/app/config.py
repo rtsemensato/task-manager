@@ -19,9 +19,15 @@ class Settings(BaseSettings):
 
     database_url: str = f"sqlite:///{_DEFAULT_DB_PATH}"
 
-    # Origens permitidas pro CORS (frontend Angular). Em produção, apontar
-    # pra URL real do app hospedado.
-    cors_origins: list[str] = ["http://localhost:4200"]
+    # String simples separada por vírgula (não lista), de propósito: um campo
+    # de texto num dashboard de deploy é mais fácil de preencher errado se
+    # exigir sintaxe JSON exata (ex: "[\"a\"]"). Em produção, apontar pra URL
+    # real do frontend hospedado.
+    cors_origins: str = "http://localhost:4200"
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
 
 settings = Settings()
