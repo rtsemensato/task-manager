@@ -5,6 +5,11 @@ por usuário. Projeto pessoal pra praticar Angular (standalone components,
 signals, forms reativos, guards e interceptor funcionais) no front-end e
 FastAPI no back-end.
 
+**Ao vivo**: [task-manager-pi-brown.vercel.app](https://task-manager-pi-brown.vercel.app)
+(API no [Render free tier](https://task-manager-api-p427.onrender.com), o
+primeiro acesso depois de um tempo sem uso pode levar ~30s pra responder
+porque o servidor "dorme").
+
 ```
 task-manager/
 ├── api/   → backend FastAPI + SQLAlchemy + JWT
