@@ -62,9 +62,12 @@ Abre em [http://localhost:4200](http://localhost:4200).
 
 ## Deploy
 
-- **API**: Render (free tier). Configurar `SECRET_KEY`, `DATABASE_URL` e
-  `CORS_ORIGINS` como variáveis de ambiente lá; não usar os valores padrão de
-  desenvolvimento em produção.
+- **API**: Render (free tier). Configurar `SECRET_KEY` e `CORS_ORIGINS` como
+  variáveis de ambiente lá; não usar os valores padrão de desenvolvimento em
+  produção. O banco é SQLite em arquivo local ao serviço: no free tier do
+  Render o disco é efêmero, então os dados são apagados a cada redeploy ou
+  restart. Aceitável pra uma demo, mas não é durável, é uma escolha
+  consciente, não um bug.
 - **Frontend**: Vercel ou Netlify. Ajustar `apiBaseUrl` em
   `web/src/environments/environment.ts` pra URL real da API antes do build de
   produção.
